@@ -74,7 +74,7 @@ If you use SaNaSoft-ANN in your research, please cite the software and the guide
 generated in Step 9 inserts the software citation automatically in the style you choose.
 
 > Samsudeen, S. N., & Ghazanfar, A. A. (2026). *SaNaSoft-ANN: Guided artificial neural network analysis for PLS-SEM
-> latent variable scores* (Version 2.1) [Computer software]. https://samssabraznawaz.github.io/ann/
+> latent variable scores* (Version 2.3) [Computer software]. https://samssabraznawaz.github.io/ann/
 
 > Leong, L.-Y., Hew, T.-S., Ooi, K.-B., Tan, G. W.-H., & Koohang, A. (2025). An SEM-ANN approach – Guidelines in
 > information systems research. *Journal of Computer Information Systems, 65*(6), 706–737.

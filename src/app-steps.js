@@ -6,7 +6,7 @@ function validCases(m){
 }
 function maxArrows(){const auto=Math.max(0,...APP.models.map(m=>m.covariates.length+m.factors.length));return toNum(APP.maxArrows)||auto;}
 function renderStep2(c){
-  if(!APP.data){c.innerHTML=`<div class="card"><div class="card-title">📊 Step 2: Models & Variables</div><div class="warn-box">Please import a data file first.</div>${navBtns('Back')}</div>`;return;}
+  if(!APP.data){c.innerHTML=`<div class="card"><div class="card-title">Step 2: Models & Variables</div><div class="warn-box">Please import a data file first.</div>${navBtns('Back')}</div>`;return;}
   const m=curModel(),d=APP.data;
   const scaleVars=d.headers.filter(h=>d.types[h]==='scale');
   const inputs=d.headers.filter(h=>h!==m.dependent);
@@ -15,7 +15,7 @@ function renderStep2(c){
   const idLike=m.covariates.filter(v=>{const s=d.stats[v];return s.uniq===d.rows.length&&/id|no|number|case|resp/i.test(v);});
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">📊 Step 2: Define Your ANN Model(s)</div>
+    <div class="card-title">Step 2: Define Your ANN Model(s)</div>
     <div class="card-subtitle">One ANN model per endogenous construct that has significant predictors in your PLS-SEM results</div>
     <div class="hint-box"><strong>How SEM-ANN papers do it:</strong> for every endogenous (dependent) construct in the PLS-SEM model, the <strong>significant</strong> predictors become the input neurons of a separate ANN (Model A, Model B, …). Example: <em>BI ← PE, SI, HM</em> is Model A and <em>UB ← BI, FC</em> is Model B. Enter the PLS-SEM path coefficients too — SaNaSoft-ANN will then build the PLS-SEM vs ANN ranking comparison table for you.</div>
     <div class="model-tabs">
@@ -24,13 +24,13 @@ function renderStep2(c){
     </div>
     <div class="row-3">
       <div class="form-group"><label class="field-label">Model name</label><input type="text" value="${esc(m.name)}" onchange="curModel().name=this.value.trim()||'Model';renderStep(2)"></div>
-      <div class="form-group"><label class="field-label">🎯 Output neuron (dependent construct)</label>
+      <div class="form-group"><label class="field-label">Output neuron (dependent construct)</label>
         <select onchange="setDV(this.value)"><option value="">— select —</option>${scaleVars.map(v=>`<option ${v===m.dependent?'selected':''}>${esc(v)}</option>`).join('')}</select>
         <div class="field-hint">A numeric latent variable score</div></div>
       <div class="form-group"><label class="field-label">PLS-SEM R² of this construct (optional)</label><input type="number" step="0.001" min="0" max="1" value="${esc(m.plsR2)}" placeholder="e.g. 0.562" onchange="curModel().plsR2=this.value">
         <div class="field-hint">Reported next to the ANN R² for comparison</div></div>
     </div>
-    <div class="section-title">📥 Input neurons (predictors)</div>
+    <div class="section-title">Input neurons (predictors)</div>
     <div style="overflow-x:auto"><table class="var-table">
       <tr><th style="width:60px">Use</th><th>Variable</th><th>Measurement</th><th>Role in ANN</th><th>PLS-SEM path coefficient (β)</th><th>Significant in PLS-SEM?</th></tr>
       ${inputs.map(v=>{const use=m.covariates.includes(v)||m.factors.includes(v);const isScale=d.types[v]==='scale';const role=m.factors.includes(v)?'factor':'covariate';const pl=m.pls[v]||{};
@@ -45,19 +45,19 @@ function renderStep2(c){
     </table></div>
     ${nonSig.length?`<div class="warn-box"><strong>Non-significant predictor(s): ${nonSig.map(esc).join(', ')}.</strong> Leong et al. (2025) use only the <em>significant</em> PLS-SEM predictors as input neurons. Consider removing them from this model.</div>`:''}
     ${idLike.length?`<div class="warn-box"><strong>${idLike.map(esc).join(', ')}</strong> looks like an ID column. Identifier columns should not be used as predictors.</div>`:''}
-    <div class="section-title">📏 Sample size check (Leong et al., 2025: 50 × arrows rule)</div>
+    <div class="section-title">Sample size check (Leong et al., 2025: 50 × arrows rule)</div>
     <div class="row-2">
       <div class="form-group"><label class="field-label">Maximum number of arrows pointing at any endogenous construct in your PLS-SEM model</label>
         <input type="number" min="1" value="${esc(APP.maxArrows)}" placeholder="${Math.max(0,...APP.models.map(x=>x.covariates.length+x.factors.length))} (auto: largest number of ANN inputs)" onchange="APP.maxArrows=this.value;renderStep(2)">
         <div class="field-hint">Count all arrows in the structural model (including non-significant paths and controls).</div></div>
-      <div>${m.dependent&&arrows?`<div class="${nValid>=need?'ok-box':'warn-box'}">Usable cases for ${esc(m.name)}: <strong>${nValid}</strong> (after listwise deletion). Required: 50 × ${arrows} = <strong>${need}</strong>. ${nValid>=need?'✅ Requirement met.':'⚠️ Below the recommended minimum — report this as a limitation.'}</div>`:'<div class="hint-box">Select an output and at least one input to check the sample size.</div>'}</div>
+      <div>${m.dependent&&arrows?`<div class="${nValid>=need?'ok-box':'warn-box'}">Usable cases for ${esc(m.name)}: <strong>${nValid}</strong> (after listwise deletion). Required: 50 × ${arrows} = <strong>${need}</strong>. ${nValid>=need?'✓ Requirement met.':'⚠ Below the recommended minimum — report this as a limitation.'}</div>`:'<div class="hint-box">Select an output and at least one input to check the sample size.</div>'}</div>
     </div>
-    <div class="section-title">⚖️ Rescaling of covariates</div>
+    <div class="section-title">Rescaling of covariates</div>
     <div class="row-2"><div class="form-group">
       <select onchange="APP.settings.covRescale=this.value">
-        ${[['standardized','Standardized (z-scores) — SPSS default ✅'],['normalized','Normalized (0 to 1)'],['adjnormalized','Adjusted normalized (−1 to 1)'],['none','None']].map(o=>`<option value="${o[0]}" ${APP.settings.covRescale===o[0]?'selected':''}>${o[1]}</option>`).join('')}
+        ${[['standardized','Standardized (z-scores) — SPSS default ✓'],['normalized','Normalized (0 to 1)'],['adjnormalized','Adjusted normalized (−1 to 1)'],['none','None']].map(o=>`<option value="${o[0]}" ${APP.settings.covRescale===o[0]?'selected':''}>${o[1]}</option>`).join('')}
       </select><div class="field-hint">The dependent variable is rescaled automatically to match the output activation (sigmoid ⇒ 0–1, as SPSS requires).</div></div>
-      <div>${APP.models.length>1?`<button class="btn btn-outline btn-sm" style="color:var(--error);border-color:var(--error)" onclick="delModel(${APP.active})">🗑 Delete ${esc(m.name)}</button>`:''}</div>
+      <div>${APP.models.length>1?`<button class="btn btn-outline btn-sm" style="color:var(--error);border-color:var(--error)" onclick="delModel(${APP.active})">Delete ${esc(m.name)}</button>`:''}</div>
     </div>
   </div>
   ${navBtns('Back','Next: Partitioning','validateStep2()')}`;
@@ -86,11 +86,11 @@ function renderStep3(c){
   const tePct=s.scheme==='kfold'?(100-s.holdout)/s.networks:s.test*(100-s.holdout)/100;
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">✂️ Step 3: Partitioning & Number of Networks</div>
+    <div class="card-title">Step 3: Partitioning & Number of Networks</div>
     <div class="card-subtitle">How the cases are split into training and testing samples, and how many networks are trained</div>
     <div class="ok-box"><strong>Leong et al. (2025):</strong> use <strong>90% training / 10% testing</strong> and a <strong>ten-fold cross-validation</strong> — i.e. ten networks, each tested on a different 10% of the data. RMSE and importance are then averaged over the ten networks.</div>
     <div class="row-2" style="margin-top:12px">
-      <div class="scheme-card ${s.scheme==='kfold'?'sel':''}" onclick="APP.settings.scheme='kfold';renderStep(3)"><input type="radio" ${s.scheme==='kfold'?'checked':''}><div><div class="t">k-fold cross-validation ✅ <span class="badge-pill badge-success">Recommended</span></div><div class="d">The data are cut into k equal folds; network k is tested on fold k and trained on the rest. With k = 10 every network is exactly 90/10 and every case is tested once.</div></div></div>
+      <div class="scheme-card ${s.scheme==='kfold'?'sel':''}" onclick="APP.settings.scheme='kfold';renderStep(3)"><input type="radio" ${s.scheme==='kfold'?'checked':''}><div><div class="t">k-fold cross-validation ✓ <span class="badge-pill badge-success">Recommended</span></div><div class="d">The data are cut into k equal folds; network k is tested on fold k and trained on the rest. With k = 10 every network is exactly 90/10 and every case is tested once.</div></div></div>
       <div class="scheme-card ${s.scheme==='random'?'sel':''}" onclick="APP.settings.scheme='random';renderStep(3)"><input type="radio" ${s.scheme==='random'?'checked':''}><div><div class="t">Repeated random splits</div><div class="d">Each network gets a fresh random training/testing split with the percentages below — equivalent to re-running the SPSS MLP several times.</div></div></div>
     </div>
     <div class="row-3" style="margin-top:16px">
@@ -114,7 +114,7 @@ function renderStep3(c){
       <div id="part-holdout" style="width:${s.holdout}%">${s.holdout>=7?'Holdout '+s.holdout+'%':''}</div>
     </div>
     ${n?`<div class="hint-box">${esc(APP.models[0].name)} has <strong>${n}</strong> usable cases → holdout <strong>${nH}</strong>; each network trains on about <strong>${Math.round(s.scheme==='kfold'?nA*(1-1/s.networks):nA*s.training/100)}</strong> and tests on about <strong>${Math.round(s.scheme==='kfold'?nA/s.networks:nA*s.test/100)}</strong> cases.</div>`:''}
-    ${(Math.round(trPct)!==90||Math.round(tePct)!==10)?`<div class="tip-box">⚠️ The current split (${trPct.toFixed(0)}/${tePct.toFixed(0)}${s.holdout?'/'+s.holdout:''}) deviates from the 90/10 recommendation and will be flagged in the compliance check.</div>`:`<div class="ok-box">✅ Every network uses a 90/10 training/testing split.</div>`}
+    ${(Math.round(trPct)!==90||Math.round(tePct)!==10)?`<div class="tip-box">⚠ The current split (${trPct.toFixed(0)}/${tePct.toFixed(0)}${s.holdout?'/'+s.holdout:''}) deviates from the 90/10 recommendation and will be flagged in the compliance check.</div>`:`<div class="ok-box">✓ Every network uses a 90/10 training/testing split.</div>`}
   </div>
   ${navBtns('Back','Next: Architecture')}`;
 }
@@ -124,20 +124,20 @@ function renderStep4(c){
   const s=APP.settings;const opt=(v,l,cur)=>`<option value="${v}" ${cur===v?'selected':''}>${l}</option>`;
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">🧠 Step 4: Network Architecture</div>
+    <div class="card-title">Step 4: Network Architecture</div>
     <div class="card-subtitle">Layers, neurons and activation functions of the multilayer perceptron</div>
     <div class="ok-box"><strong>Leong et al. (2025):</strong> <strong>two hidden layers</strong> (deep learning), hidden neurons <strong>generated automatically</strong>, and the <strong>sigmoid</strong> activation for both hidden and output layers.</div>
     <div class="row-3" style="margin-top:12px">
       <div class="form-group"><label class="field-label">Number of hidden layers</label>
-        <select onchange="APP.settings.hiddenLayers=+this.value;renderStep(4)">${opt(1,'1 hidden layer',s.hiddenLayers)}${opt(2,'2 hidden layers ✅ (deep learning)',s.hiddenLayers)}</select></div>
+        <select onchange="APP.settings.hiddenLayers=+this.value;renderStep(4)">${opt(1,'1 hidden layer',s.hiddenLayers)}${opt(2,'2 hidden layers ✓ (deep learning)',s.hiddenLayers)}</select></div>
       <div class="form-group"><label class="field-label">Hidden layer activation</label>
-        <select onchange="APP.settings.hAct=this.value">${opt('sigmoid','Sigmoid ✅',s.hAct)}${opt('tanh','Hyperbolic tangent (SPSS default)',s.hAct)}${opt('relu','ReLU',s.hAct)}</select></div>
+        <select onchange="APP.settings.hAct=this.value">${opt('sigmoid','Sigmoid ✓',s.hAct)}${opt('tanh','Hyperbolic tangent (SPSS default)',s.hAct)}${opt('relu','ReLU',s.hAct)}</select></div>
       <div class="form-group"><label class="field-label">Output layer activation</label>
-        <select onchange="APP.settings.oAct=this.value;renderStep(4)">${opt('sigmoid','Sigmoid ✅',s.oAct)}${opt('identity','Identity (SPSS default)',s.oAct)}${opt('tanh','Hyperbolic tangent',s.oAct)}</select></div>
+        <select onchange="APP.settings.oAct=this.value;renderStep(4)">${opt('sigmoid','Sigmoid ✓',s.oAct)}${opt('identity','Identity (SPSS default)',s.oAct)}${opt('tanh','Hyperbolic tangent',s.oAct)}</select></div>
     </div>
     <div class="section-title">Number of neurons in the hidden layer(s)</div>
     <div class="row-2">
-      <div class="scheme-card ${s.autoUnits?'sel':''}" onclick="APP.settings.autoUnits=true;renderStep(4)"><input type="radio" ${s.autoUnits?'checked':''}><div><div class="t">Automatically compute ✅</div><div class="d">SaNaSoft-ANN trains candidate networks with different numbers of hidden neurons and keeps the smallest network whose testing error is within 2% of the best. The chosen architecture is reported.</div></div></div>
+      <div class="scheme-card ${s.autoUnits?'sel':''}" onclick="APP.settings.autoUnits=true;renderStep(4)"><input type="radio" ${s.autoUnits?'checked':''}><div><div class="t">Automatically compute ✓</div><div class="d">SaNaSoft-ANN trains candidate networks with different numbers of hidden neurons and keeps the smallest network whose testing error is within 2% of the best. The chosen architecture is reported.</div></div></div>
       <div class="scheme-card ${!s.autoUnits?'sel':''}" onclick="APP.settings.autoUnits=false;renderStep(4)"><input type="radio" ${!s.autoUnits?'checked':''}><div><div class="t">Custom</div><div class="d">Specify the number of neurons in each hidden layer yourself.</div></div></div>
     </div>
     <div class="row-3" style="margin-top:12px">
@@ -172,21 +172,21 @@ function renderStep5(c){
   const algCard=(k,t,d)=>`<div class="scheme-card ${s.algorithm===k?'sel':''}" onclick="APP.settings.algorithm='${k}';if('${k}'==='scg')APP.settings.type='batch';renderStep(5)"><input type="radio" ${s.algorithm===k?'checked':''}><div><div class="t">${t}</div><div class="d">${d}</div></div></div>`;
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">⚙️ Step 5: Training</div>
+    <div class="card-title">Step 5: Training</div>
     <div class="card-subtitle">Optimisation algorithm and stopping rules</div>
     <div class="inline-flex" style="margin-bottom:12px"><span class="small"><strong>One-click presets:</strong></span>
-      <button class="btn btn-outline btn-sm" onclick="applyPreset('leong')">📘 Leong et al. (2025)</button>
-      <button class="btn btn-outline btn-sm" onclick="applyPreset('spss')">🖥️ SPSS MLP defaults</button>
+      <button class="btn btn-outline btn-sm" onclick="applyPreset('leong')">Leong et al. (2025)</button>
+      <button class="btn btn-outline btn-sm" onclick="applyPreset('spss')">SPSS MLP defaults</button>
       <button class="btn btn-outline btn-sm" onclick="applyPreset('defaults')">↺ Restore SaNaSoft defaults</button></div>
     <div class="ok-box"><strong>Leong et al. (2025):</strong> feed-forward back-propagation (<strong>FFBP</strong>) to minimise errors. SaNaSoft-ANN implements FFBP as gradient descent with momentum, the algorithm SPSS labels “Gradient descent”.</div>
     <div class="row-3" style="margin-top:12px">
-      ${algCard('ffbp','FFBP — gradient descent ✅','Classic back-propagation with momentum. Recommended by Leong et al. (2025).')}
+      ${algCard('ffbp','FFBP — gradient descent ✓','Classic back-propagation with momentum. Recommended by Leong et al. (2025).')}
       ${algCard('scg','Scaled conjugate gradient','Møller (1993). SPSS default for batch training; very fast and precise.')}
       ${algCard('adam','Adam','Adaptive modern optimiser (Kingma & Ba, 2015). Not available in SPSS.')}
     </div>
     <div class="row-3" style="margin-top:14px">
       <div class="form-group"><label class="field-label">Type of training</label>
-        <select onchange="APP.settings.type=this.value;renderStep(5)" ${s.algorithm==='scg'?'disabled':''}>${opt('batch','Batch ✅ (all training cases per update)',s.type)}${opt('minibatch','Mini-batch',s.type)}${opt('online','Online (one case per update)',s.type)}</select>
+        <select onchange="APP.settings.type=this.value;renderStep(5)" ${s.algorithm==='scg'?'disabled':''}>${opt('batch','Batch ✓ (all training cases per update)',s.type)}${opt('minibatch','Mini-batch',s.type)}${opt('online','Online (one case per update)',s.type)}</select>
         ${s.algorithm==='scg'?'<div class="field-hint">SCG works with batch training only (as in SPSS)</div>':''}</div>
       ${s.algorithm==='ffbp'?`
       <div class="form-group"><label class="field-label">Learning rate</label><input type="number" step="0.05" min="0.001" value="${s.lr}" onchange="APP.settings.lr=Math.max(0.001,+this.value)"><div class="field-hint">Default 1.0 (applied to the mean-error gradient)</div></div>
@@ -213,10 +213,10 @@ function renderStep5(c){
 // ───────────────────────── STEP 6 — OUTPUT ─────────────────────────
 function renderStep6(c){
   const o=APP.settings.output;
-  const tog=(k,l,sub,rec)=>`<div class="toggle-row"><div><div class="toggle-label">${l} ${rec?'✅':''}</div>${sub?`<div class="toggle-sub">${sub}</div>`:''}</div><label class="toggle-switch"><input type="checkbox" ${o[k]?'checked':''} onchange="APP.settings.output.${k}=this.checked"><span class="toggle-slider"></span></label></div>`;
+  const tog=(k,l,sub,rec)=>`<div class="toggle-row"><div><div class="toggle-label">${l} ${rec?'✓':''}</div>${sub?`<div class="toggle-sub">${sub}</div>`:''}</div><label class="toggle-switch"><input type="checkbox" ${o[k]?'checked':''} onchange="APP.settings.output.${k}=this.checked"><span class="toggle-slider"></span></label></div>`;
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">📋 Step 6: Output Options</div>
+    <div class="card-title">Step 6: Output Options</div>
     <div class="card-subtitle">Tables and charts shown in the Results step</div>
     <div class="ok-box"><strong>Leong et al. (2025, Fig. 21):</strong> report the <strong>synaptic weights</strong>, the <strong>model summary</strong> (SSE, relative error), <strong>RMSE for training and testing</strong>, <strong>R²</strong> and the <strong>independent variable importance</strong> (sensitivity analysis).</div>
     <div class="section-title">Guideline outputs</div>
@@ -284,11 +284,11 @@ function renderStep7(c){
       <tr><td>Training type</td><td><strong>${s.algorithm==='scg'?'batch':s.type}</strong></td></tr>
       <tr><td>Stopping</td><td><strong>${s.patience} epochs without improvement (after ${s.minEpochs}); max ${s.maxEpochs}</strong></td></tr>
       <tr><td>Covariate rescaling / seed</td><td><strong>${s.covRescale} · ${s.seed}</strong></td></tr></table></div>
-    <div class="section-title">🔍 Leong et al. (2025) compliance check</div>
-    ${C.map(ch=>`<div class="compliance-item ${ch.status}"><span class="compliance-icon">${ch.status==='pass'?'✅':ch.status==='warn'?'⚠️':'❌'}</span><div><strong>${ch.label}:</strong> ${esc(ch.current)} — ${ch.msg}</div></div>`).join('')}
+    <div class="section-title">Leong et al. (2025) compliance check</div>
+    ${C.map(ch=>`<div class="compliance-item ${ch.status}"><span class="compliance-icon">${ch.status==='pass'?'✓':ch.status==='warn'?'⚠':'✕'}</span><div><strong>${ch.label}:</strong> ${esc(ch.current)} — ${ch.msg}</div></div>`).join('')}
   </div>
   <div class="card" style="text-align:center;border:2px solid var(--accent)">
-    <h2 style="font-size:20px;color:var(--accent);margin-bottom:6px">🚀 Ready to run</h2>
+    <h2 style="font-size:20px;color:var(--accent);margin-bottom:6px">Ready to run</h2>
     <p style="color:var(--muted);margin-bottom:16px;font-size:13px">${APP.models.length} model(s) × ${s.networks} network(s)${s.autoUnits?' + automatic neuron search':''}. Usually a few seconds; large samples may take up to a minute.</p>
     <button class="btn btn-accent" onclick="runAnalysis()">▶ RUN ANN ANALYSIS</button>
   </div>

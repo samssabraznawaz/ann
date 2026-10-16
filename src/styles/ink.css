@@ -1,0 +1,123 @@
+
+/* ── INK & PAPER THEME (v2.2): flat, print-like, one quiet accent; same look as the SaNaSoft suite ── */
+:root{
+  --primary:#1f4e79;--primary-light:#163a5c;--primary-pale:#e6ecf3;
+  --accent:#1f4e79;--accent-light:#163a5c;
+  --success:#2e6b3f;--warning:#8a5a00;--error:#a23b2a;
+  --bg:#f7f5f0;--card:#fff;--border:#d9d4c7;
+  --text:#1c1f23;--muted:#5b6168;--hint:#1f4e79;
+  --radius:4px;--shadow:none;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+body{font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}
+header{background:#fff;color:var(--text);box-shadow:none;border-bottom:1px solid var(--border)}
+.logo{font-family:var(--serif);font-weight:600;letter-spacing:0}
+.logo span{color:var(--primary)}
+.tagline{opacity:1;color:var(--muted)}
+header .badge{background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--muted);font-family:var(--mono)}
+header .hbtn{background:#fff;color:var(--text);border:1px solid var(--border);border-radius:3px;font-weight:500}
+header .hbtn:hover{background:#fff;border-color:var(--text)}
+.step-dot{border-radius:3px;border-width:1px}
+.step-dot.active{box-shadow:none}
+.sidebar-step{border-radius:3px}
+.sidebar-step .snum{border-radius:3px}
+.card{border-radius:4px;box-shadow:none}
+.card-title{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--text)}
+.hint-box,.tip-box,.warn-box,.ok-box{border-left:0;border-radius:3px;border:1px solid}
+.hint-box{background:#e6ecf3;border-color:#b9c9da;color:var(--text)}
+.hint-box strong{color:var(--text)}
+.tip-box{background:#f6ebd3;border-color:#dcc590;color:var(--text)}
+.warn-box{background:#f6e3de;border-color:#dcb1a7;color:var(--text)}
+.ok-box{background:#e8f0e6;border-color:#b7cdb3;color:var(--text)}
+input[type=text],input[type=number],select,textarea{border-width:1px;border-radius:3px}
+input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-pale)}
+.btn{border-radius:3px;font-weight:500}
+.btn-primary:hover,.btn-accent:hover{transform:none;box-shadow:none}
+.btn-accent{border-radius:3px;padding:11px 26px}
+.btn-outline{border-width:1px;border-color:var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--text);background:#fff}
+/* Tables: the APA layout (rules above and below the header and at the end, no fills). */
+table{border-top:1.5px solid var(--text);border-bottom:1.5px solid var(--text)}
+th{background:#fff;color:var(--text);font-weight:500;font-size:12.5px;border-bottom:1px solid var(--text)}
+td{border-bottom:1px solid #ebe7de}
+tr:hover td{background:#f1eee6}
+tr:nth-child(even) td{background:transparent}
+table.spss caption{color:var(--text);font-family:var(--serif);font-size:14px}
+#drop-zone{border-width:1.5px;border-radius:4px;background:#fff}
+.var-pool{border-width:1.5px;border-radius:4px;background:#fff}
+.var-chip{border-radius:3px}
+.var-chip.factor{background:#f1e6e2;color:#7a2e20;border-color:#d9b8ae}
+.var-chip.dep{background:#e8f0e6;color:#2e6b3f;border-color:#b7cdb3}
+.tabs{border-bottom-width:1px}
+.tab{font-weight:500}
+.tab.active{color:var(--text);border-bottom-color:var(--primary)}
+#partition-bar{border-radius:3px}
+#part-train{background:#1f4e79}#part-test{background:#8a5a00}#part-holdout{background:#2e6b3f}
+.compliance-item{border-radius:3px}
+.compliance-item.pass{background:#e8f0e6;color:#2e6b3f}
+.compliance-item.fail{background:#f6e3de;color:#a23b2a}
+.compliance-item.warn{background:#f6ebd3;color:#6b4600}
+#network-canvas{border-radius:4px;background:#fff}
+.metric-card{border-radius:4px;background:#fff;border:1px solid var(--border)}
+.metric-val,.kpi .v,.num-display,.mono,.num{font-family:var(--mono)}
+#report-output{border-radius:4px;font-family:var(--serif)}
+.section-title{color:var(--text);border-bottom:1px solid var(--border);font-weight:600}
+.badge-pill{border-radius:3px}
+.model-tab{border-radius:3px;border-width:1px}
+.scheme-card{border-radius:4px;border-width:1px}
+.kpi{border-radius:4px;border-width:1px}
+.kpi.warn .v{color:#8a5a00}
+.progress-fill{background:#e6e2d9}
+.svg-wrap,details.adv{border-radius:4px;background:#fff}
+details.adv summary{color:var(--text)}
+.flow span.s{border-radius:3px;border-color:#b9c9da}
+.arrow-badge{color:var(--primary)}
+.highlight-cell{background:#f6ebd3!important}
+
+/* ── suite bar and footer (v2.3): the same as in every SaNaSoft app; Home link top left and bottom left ── */
+:root{--font:'IBM Plex Sans',system-ui,sans-serif}
+.suitebar {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0 1.2rem;
+  padding: 0 1.25rem; min-height: 2.25rem; box-sizing: border-box;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  font-family: var(--font); font-size: 0.82rem; line-height: 1.3;
+}
+.sb-home {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2rem;
+  color: var(--text); font-weight: 500; text-decoration: none; white-space: nowrap;
+}
+.sb-home:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.sb-icon { flex: none; }
+.sb-apps { display: flex; flex-wrap: wrap; gap: 0 1.1rem; list-style: none; margin: 0; padding: 0; }
+.sb-apps a { display: inline-flex; align-items: center; min-height: 2rem; color: var(--muted); text-decoration: none; white-space: nowrap; }
+.sb-apps a:hover { color: var(--text); text-decoration: underline; text-underline-offset: 0.2em; }
+.sb-apps a[aria-current] { color: var(--text); font-weight: 500; }
+
+.suitefoot {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 1.4rem;
+  margin-top: 2rem; padding: 0.9rem 1.25rem 1.4rem; box-sizing: border-box;
+  border-top: 1px solid var(--border); color: var(--muted); font-family: var(--font); font-size: 0.82rem;
+}
+.suitefoot p { margin: 0; }
+.suitefoot .sf-links { margin-inline-start: auto; }
+.suitefoot .sf-links a { color: var(--muted); }
+.suitefoot .sf-links a:hover { color: var(--text); }
+
+@media (max-width: 640px) {
+  .suitebar { padding: 0 0.75rem; }
+  .sb-apps { gap: 0 0.8rem; }
+  .suitefoot { padding: 0.8rem 0.75rem 1.2rem; }
+  .suitefoot .sf-links { margin-inline-start: 0; }
+}
+@media print { .suitebar, .suitefoot .sb-home { display: none; } }
+.skip{position:absolute;left:.5rem;top:-3rem;z-index:1000;background:var(--primary);color:#fff;padding:.5rem .8rem;border-radius:3px;font-weight:600;text-decoration:none}
+.skip:focus{top:.5rem}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.brandlink{display:flex;flex-direction:column;color:inherit;text-decoration:none}
+.brandlink .logo{display:block}.brandlink .tagline{display:block}
+.brandlink:hover .logo{text-decoration:underline}
+#content:focus{outline:none}
+button.sidebar-step{width:100%;text-align:left;background:none;font:inherit;color:inherit}
+button.step-dot{padding:0;font:inherit}
+.suitefoot{margin-top:0}

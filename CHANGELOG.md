@@ -1,5 +1,28 @@
 # Changelog — SaNaSoft-ANN
 
+## [2.3.0] – 2026-10-16
+
+### Added
+- A "Home" link to the SaNaSoft start page (https://sanapls.com/) in the same place as in every SaNaSoft app:
+  top left in a thin bar above the header, and bottom left in the footer. A link to SaNaSoft fsQCA sits in the same bar.
+- The logo and name lead to the Welcome step of ANN; nothing you entered is lost.
+- Your work is kept automatically in this browser. Going to the start page and coming back in the same tab
+  (Back button or the ANN link) reopens the same step with the same data and settings; in a new tab the Welcome step
+  offers to resume. A warning appears if you try to leave while an analysis is running.
+- The browser tab title names the current step; a "Skip to content" link; the steps are real buttons for keyboard users.
+- Navigation test (tests/e2e/test_nav.py).
+
+### Changed
+- The fsQCA link moved from the header to the suite bar. No change to any computation.
+
+## [2.2.0] – 2026-10-16
+
+### Changed
+- New "Ink & Paper" look, shared with the SaNaSoft suite: warm paper background, IBM Plex Sans and Source Serif 4,
+  one quiet ink-blue accent, flat panels without shadows or gradients, APA-style tables (three rules, no fills),
+  hairline notices instead of coloured side stripes. Charts and the network diagram use colour-blind-friendly colours.
+- No change to any computation: the engine, results and reports are identical.
+
 ## [2.1.0] – 2026-09-28
 
 ### Changed

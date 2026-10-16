@@ -1,6 +1,6 @@
 {
   "name": "sanasoft-ann",
-  "version": "2.1.0",
+  "version": "2.3.0",
   "description": "Guided artificial neural network analysis for PLS-SEM + ANN research (Leong et al., 2025)",
   "private": true,
   "license": "MIT",

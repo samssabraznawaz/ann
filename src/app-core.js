@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════
 // SaNaSoft-ANN v2 — APPLICATION
 // ═══════════════════════════════════════════════════════════════════
-const VERSION='2.1';
+const VERSION='2.3';
 const DEFAULT_SETTINGS=()=>({
   covRescale:'standardized',dvRescale:'standardized',
   scheme:'kfold',networks:10,training:90,test:10,holdout:0,seed:42,
@@ -14,16 +14,16 @@ const DEFAULT_SETTINGS=()=>({
 const newModel=name=>({name,dependent:null,covariates:[],factors:[],pls:{},plsR2:''});
 const APP={step:0,data:null,models:[newModel('Model A')],active:0,settings:DEFAULT_SETTINGS(),results:null,charts:{},resModel:0,resNet:0,resTab:'Summary',worker:null,cancel:false,maxArrows:''};
 const STEPS=[
-  {title:'Welcome',icon:'🏠',desc:'Start here'},
-  {title:'Import Data',icon:'📂',desc:'Upload & screen data'},
-  {title:'Models & Variables',icon:'📊',desc:'Outputs, inputs, PLS paths'},
-  {title:'Partitioning',icon:'✂️',desc:'10 networks · 90/10'},
-  {title:'Architecture',icon:'🧠',desc:'Layers, neurons, activation'},
-  {title:'Training',icon:'⚙️',desc:'Algorithm & stopping rules'},
-  {title:'Output Options',icon:'📋',desc:'What to display'},
+  {title:'Welcome',icon:'',desc:'Start here'},
+  {title:'Import Data',icon:'',desc:'Upload & screen data'},
+  {title:'Models & Variables',icon:'',desc:'Outputs, inputs, PLS paths'},
+  {title:'Partitioning',icon:'',desc:'10 networks · 90/10'},
+  {title:'Architecture',icon:'',desc:'Layers, neurons, activation'},
+  {title:'Training',icon:'',desc:'Algorithm & stopping rules'},
+  {title:'Output Options',icon:'',desc:'What to display'},
   {title:'Review & Run',icon:'▶️',desc:'Compliance & execute'},
-  {title:'Results',icon:'📈',desc:'Tables, charts, diagram'},
-  {title:'Report',icon:'📄',desc:'Publication-ready write-up'},
+  {title:'Results',icon:'',desc:'Tables, charts, diagram'},
+  {title:'Report',icon:'',desc:'Publication-ready write-up'},
 ];
 
 // ───────────────────────── UTILITIES ─────────────────────────
@@ -37,7 +37,7 @@ function rng32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>
 function gauss(r){let u=0,v=0;while(u===0)u=r();v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function meanA(a){return a.reduce((x,y)=>x+y,0)/(a.length||1);}
 function sdA(a){if(a.length<2)return 0;const m=meanA(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/(a.length-1));}
-function toast(msg,type){const t=document.createElement('div');t.textContent=msg;t.style.cssText=`position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:${type==='err'?'#c62828':'#1a237e'};color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:2000;box-shadow:0 6px 20px rgba(0,0,0,.25)`;document.body.appendChild(t);setTimeout(()=>t.remove(),3200);}
+function toast(msg,type){const t=document.createElement('div');t.textContent=msg;t.style.cssText=`position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:${type==='err'?'#a23b2a':'#1f4e79'};color:#fff;padding:10px 18px;border-radius:3px;font-size:13px;z-index:2000;box-shadow:0 6px 20px rgba(0,0,0,.25)`;document.body.appendChild(t);setTimeout(()=>t.remove(),3200);}
 function download(name,content,type){const a=document.createElement('a');const blob=content instanceof Blob?content:new Blob([content],{type:type||'text/plain'});a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
 
 // ───────────────────────── STATISTICS ─────────────────────────
@@ -73,17 +73,17 @@ const pT=(t,df)=>ibeta(df/(df+t*t),df/2,0.5);
 const fmtP=p=>p<.001?'< .001':'= '+f0(p,3);
 
 // ───────────────────────── NAVIGATION ─────────────────────────
-function goStep(n){if(n<0||n>9)return;APP.step=n;renderProgressBar();renderSidebar();renderStep();$('content').scrollTop=0;}
+function goStep(n){if(n<0||n>9)return;APP.step=n;renderProgressBar();renderSidebar();renderStep();$('content').scrollTop=0;document.title=`${STEPS[n].title} · SaNaSoft-ANN`;if(typeof writeAutosave==='function')writeAutosave();}
 function next(){goStep(APP.step+1);} function prev(){goStep(APP.step-1);}
 function renderProgressBar(){
   let h='';STEPS.forEach((s,i)=>{const cls=i<APP.step?'done':i===APP.step?'active':'';
-    h+=`<div class="step-pill" title="${esc(s.title)}"><div class="step-dot ${cls}" onclick="goStep(${i})"><span>${i===0?'⌂':i}</span></div><div class="step-label ${i===APP.step?'active':''}">${esc(s.title)}</div></div>`;
+    h+=`<div class="step-pill" title="${esc(s.title)}"><button type="button" class="step-dot ${cls}" onclick="goStep(${i})" aria-label="${esc(s.title)}" ${i===APP.step?'aria-current="step"':''} tabindex="-1"><span>${i===0?'⌂':i}</span></button><div class="step-label ${i===APP.step?'active':''}">${esc(s.title)}</div></div>`;
     if(i<STEPS.length-1)h+=`<div class="step-connector ${i<APP.step?'done':''}"></div>`;});
   $('progress-bar').innerHTML=h;
 }
 function renderSidebar(){
   $('sidebar').innerHTML=STEPS.map((s,i)=>{const cls=i<APP.step?'done':i===APP.step?'active':'';
-    return `<div class="sidebar-step ${cls}" onclick="goStep(${i})"><div class="snum">${i<APP.step?'✓':(i===0?'⌂':i)}</div><div><div class="stitle">${s.icon} ${esc(s.title)}</div><div class="sdesc">${esc(s.desc)}</div></div></div>`;}).join('')+
+    return `<button type="button" class="sidebar-step ${cls}" onclick="goStep(${i})" ${i===APP.step?'aria-current="step"':''}><div class="snum" aria-hidden="true">${i<APP.step?'✓':(i===0?'⌂':i)}</div><div><div class="stitle">${esc(s.title)}${i<APP.step?'<span class="visually-hidden"> (done)</span>':''}</div><div class="sdesc">${esc(s.desc)}</div></div></button>`;}).join('')+
     `<div style="margin-top:auto;padding:12px;font-size:10.5px;color:var(--muted);line-height:1.5;border-top:1px solid var(--border)">Engine: pure-JavaScript MLP in a background thread · data never leave your computer.<br>Developed by Prof. S. Sabraz Nawaz &amp; Prof. Ghazanfar Ali.<br><a href="https://github.com/samssabraznawaz/ann" target="_blank" rel="noopener" style="color:var(--primary-light)">Source code &amp; validation</a> · <a href="https://samssabraznawaz.github.io/fsqca/" style="color:var(--primary-light)">SaNaSoft fsQCA</a></div>`;
 }
 function renderStep(){Object.values(APP.charts).forEach(c=>{try{c.destroy();}catch(e){}});APP.charts={};
@@ -93,23 +93,24 @@ const navBtns=(backLbl,nextLbl,nextFn)=>`<div class="btn-group">${backLbl?`<butt
 
 // ───────────────────────── STEP 0 — WELCOME ─────────────────────────
 function renderStep0(c){
-  c.innerHTML=`
+  const saved=!APP.data&&typeof readAutosave==='function'?readAutosave():null;
+  c.innerHTML=(saved?`<div class="ok-box" role="status" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span>You have unfinished work from ${esc(new Date(saved.saved).toLocaleString())}: <strong>${esc(saved.data.fileName||'')}</strong>.</span><button class="btn btn-primary btn-sm" onclick="restoreAutosave(readAutosave(),false)">Continue where you left off</button><button class="btn btn-outline btn-sm" onclick="discardAutosave()">Start fresh</button></div>`:'')+`
   <div class="card" style="text-align:center;padding:34px">
-    <div style="font-size:52px;margin-bottom:8px">🧠</div>
-    <h1 style="font-size:26px;color:var(--primary);margin-bottom:8px">Welcome to SaNaSoft-ANN ${VERSION}</h1>
+    <div style="font-size:52px;margin-bottom:8px"></div>
+    <h1 style="font-size:28px;font-family:var(--serif);font-weight:600;color:var(--text);margin-bottom:8px">Welcome to SaNaSoft-ANN ${VERSION}</h1>
     <p style="color:var(--muted);font-size:14px;max-width:680px;margin:0 auto 18px">A guided neural-network tool for the <strong>PLS-SEM + ANN hybrid approach</strong>. It reproduces the SPSS Multilayer Perceptron and automates the full procedure of Leong et al. (2025): ten networks, 90/10 partitioning, RMSE tables, R² and the averaged sensitivity analysis.</p>
     <div class="flow">${['Significant PLS-SEM predictors','Inputs → ANN','10 networks (10-fold, 90/10)','2 hidden layers · sigmoid · FFBP','RMSE & R²','Sensitivity analysis','Compare with PLS-SEM','Report'].map((s,i,a)=>`<span class="s">${s}</span>${i<a.length-1?'<span class="a">→</span>':''}`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;max-width:820px;margin:18px auto 22px;text-align:left">
-      ${[['⚡','Fast','A full ten-network analysis takes seconds, not minutes. The work runs in a background thread so the page stays responsive.'],
-         ['🔬','Faithful to the guideline','Implements the Leong et al. (2025) steps, formulas and reporting tables, with a compliance checker before you run.'],
-         ['🧩','Several models at once','Analyse every endogenous construct (Model A, B, C…) in one run, as most SEM-ANN papers do.'],
-         ['📄','Ready to publish','Report in APA, Harvard, Emerald, Chicago, IEEE or Vancouver style with formatted tables, downloadable as Word.']]
+      ${[['','Fast','A full ten-network analysis takes seconds, not minutes. The work runs in a background thread so the page stays responsive.'],
+         ['','Faithful to the guideline','Implements the Leong et al. (2025) steps, formulas and reporting tables, with a compliance checker before you run.'],
+         ['','Several models at once','Analyse every endogenous construct (Model A, B, C…) in one run, as most SEM-ANN papers do.'],
+         ['','Ready to publish','Report in APA, Harvard, Emerald, Chicago, IEEE or Vancouver style with formatted tables, downloadable as Word.']]
         .map(x=>`<div class="card" style="padding:14px;margin:0;box-shadow:none;border:1.5px solid var(--border)"><div style="font-size:22px">${x[0]}</div><div style="font-weight:700;font-size:13px;margin:4px 0">${x[1]}</div><div style="font-size:12px;color:var(--muted);line-height:1.5">${x[2]}</div></div>`).join('')}
     </div>
     <div class="warn-box" style="max-width:700px;margin:0 auto 18px;text-align:left"><strong>Prerequisite:</strong> this is Stage 2 of the hybrid analysis. First complete your PLS-SEM analysis (e.g., SmartPLS), then export the <strong>latent variable scores</strong> as CSV or Excel. Only predictors with <strong>significant</strong> PLS-SEM paths should enter the ANN.</div>
     <div class="inline-flex" style="justify-content:center">
-      <button class="btn btn-accent" onclick="next()">🚀 Start with my data</button>
-      <button class="btn btn-outline" onclick="loadDemo()">🧪 Try with demo data</button>
+      <button class="btn btn-accent" onclick="next()">Start with my data</button>
+      <button class="btn btn-outline" onclick="loadDemo()">Try with demo data</button>
     </div>
     <div class="ok-box" style="max-width:700px;margin:20px auto 0;text-align:left"><strong>Developed by Prof. S. Sabraz Nawaz and Prof. Ghazanfar Ali.</strong> Please cite SaNaSoft-ANN when you use it:<br><span style="font-family:'Times New Roman',serif">Samsudeen, S. N., &amp; Ghazanfar, A. A. (2026). <i>SaNaSoft-ANN: Guided artificial neural network analysis for PLS-SEM latent variable scores</i> (Version ${VERSION}) [Computer software]. https://samssabraznawaz.github.io/ann/</span><br><span class="small">The report in Step 9 adds this citation automatically in your chosen style. Companion tool for configurational analysis of the same scores: <a href="https://samssabraznawaz.github.io/fsqca/">SaNaSoft fsQCA</a>.</span></div>
     <div class="hint-box" style="max-width:700px;margin:12px auto 0;text-align:left"><strong>Guideline implemented:</strong> Leong, L.-Y., Hew, T.-S., Ooi, K.-B., Tan, G. W.-H., &amp; Koohang, A. (2025). An SEM-ANN approach – Guidelines in information systems research. <em>Journal of Computer Information Systems, 65</em>(6), 706–737. https://doi.org/10.1080/08874417.2024.2329128.</div>
@@ -142,11 +143,11 @@ function loadDemo(){
 function renderStep1(c){
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">📂 Step 1: Import & Screen Your Data</div>
+    <div class="card-title">Step 1: Import & Screen Your Data</div>
     <div class="card-subtitle">Latent variable scores exported from SmartPLS, ADANCO, WarpPLS, R (seminr/cSEM) or SPSS</div>
     <div class="hint-box"><strong>What should the file look like?</strong> One row per respondent, one column per construct score (first row = column names). You may include ID or demographic columns — you choose later which columns enter the ANN. Empty cells, "NA" or "." are treated as missing.</div>
     <div id="drop-zone" onclick="$('file-input').click()">
-      <div class="dz-icon">📁</div><div class="dz-text">Click to upload or drag & drop your file here</div>
+      <div class="dz-icon"></div><div class="dz-text">Click to upload or drag & drop your file here</div>
       <div class="dz-sub">CSV (.csv, .txt) or Excel (.xlsx, .xls) · processed entirely in your browser</div>
     </div>
     <input type="file" id="file-input" accept=".csv,.txt,.xlsx,.xls" style="display:none" onchange="handleFileUpload(this.files[0]);this.value=''">
@@ -193,10 +194,10 @@ function showDataInfo(){
   const scale=d.headers.filter(h=>d.types[h]==='scale');
   const anyMissing=d.headers.some(h=>d.stats[h].missing>0);
   const flagged=scale.filter(h=>Math.abs(d.stats[h].skew)>2||Math.abs(d.stats[h].kurt)>7);
-  $('file-info').innerHTML=`<div class="ok-box"><strong>✅ ${esc(d.fileName)}</strong> — ${d.rows.length} rows × ${d.headers.length} columns (${scale.length} numeric, ${d.headers.length-scale.length} categorical/text).</div>
+  $('file-info').innerHTML=`<div class="ok-box"><strong>✓ ${esc(d.fileName)}</strong> — ${d.rows.length} rows × ${d.headers.length} columns (${scale.length} numeric, ${d.headers.length-scale.length} categorical/text).</div>
    ${anyMissing?`<div class="tip-box"><strong>Missing values detected.</strong> Like SPSS, SaNaSoft-ANN applies <strong>listwise deletion</strong>: a case is excluded from a model only if one of <em>that model's</em> variables is missing. The number of excluded cases is shown in the Case Processing Summary.</div>`:''}`;
   $('data-screen').innerHTML=`
-    <div class="section-title">🔎 Data screening (descriptive statistics)</div>
+    <div class="section-title">Data screening (descriptive statistics)</div>
     <div style="overflow-x:auto"><table>
       <tr><th>Variable</th><th>Type</th><th class="num">Valid N</th><th class="num">Missing</th><th class="num">Mean</th><th class="num">SD</th><th class="num">Min</th><th class="num">Max</th><th class="num">Skewness</th><th class="num">Kurtosis</th></tr>
       ${d.headers.map(h=>{const s=d.stats[h];const sc=d.types[h]==='scale';const bad=sc&&(Math.abs(s.skew)>2||Math.abs(s.kurt)>7);
@@ -204,7 +205,7 @@ function showDataInfo(){
         ${sc?`<td class="num">${f(s.mean)}</td><td class="num">${f(s.sd)}</td><td class="num">${f(s.min)}</td><td class="num">${f(s.max)}</td><td class="num" style="${bad?'color:var(--warning);font-weight:700':''}">${f(s.skew)}</td><td class="num" style="${bad?'color:var(--warning);font-weight:700':''}">${f(s.kurt)}</td>`:'<td colspan="6" class="small">—</td>'}</tr>`;}).join('')}
     </table></div>
     <div class="hint-box"><strong>How to read this:</strong> Leong et al. (2025) ask researchers to assess multivariate assumptions (normality, linearity, multicollinearity). ANN makes no distributional assumptions, so non-normal data are not a problem for the ANN itself — but you should report them. |Skewness| > 2 or |kurtosis| > 7 are flagged as substantial departures from normality${flagged.length?` (flagged: <strong>${flagged.map(esc).join(', ')}</strong>)`:''}. Linearity and multicollinearity are tested for each model after the run (Results → Descriptives & Assumptions).</div>
-    <div class="section-title">📋 Preview (first 5 rows)</div>
+    <div class="section-title">Preview (first 5 rows)</div>
     <div style="overflow-x:auto"><table><tr>${d.headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>
     ${d.rows.slice(0,5).map(r=>`<tr>${d.headers.map(h=>`<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</table></div>`;
 }

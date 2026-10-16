@@ -62,11 +62,11 @@ function fmtRef(key){
 }
 const styleOptions=cur=>REF_STYLES.map(x=>`<option value="${x[0]}" ${cur===x[0]?'selected':''}>${x[1]}</option>`).join('');
 function renderStep9(c){
-  if(!APP.results){c.innerHTML=`<div class="card"><div class="card-title">📄 Report</div><div class="warn-box">No results yet — run the analysis first (Step 7).</div><div class="btn-group"><button class="btn btn-primary" onclick="goStep(7)">Go to Step 7</button></div></div>`;return;}
+  if(!APP.results){c.innerHTML=`<div class="card"><div class="card-title">Report</div><div class="warn-box">No results yet — run the analysis first (Step 7).</div><div class="btn-group"><button class="btn btn-primary" onclick="goStep(7)">Go to Step 7</button></div></div>`;return;}
   const rp=APP.settings.report;
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">📄 Step 9: Publication-Ready Report</div>
+    <div class="card-title">Step 9: Publication-Ready Report</div>
     <div class="card-subtitle">Method and results text with formatted tables and a verified reference list</div>
     <div class="row-3">
       <div class="form-group"><label class="field-label">Citation style</label><select onchange="APP.settings.report.style=this.value;generateReport()">${styleOptions(rp.style)}</select></div>
@@ -75,9 +75,9 @@ function renderStep9(c){
     </div>
     <div class="inline-flex" style="margin-bottom:14px">
       <button class="btn btn-primary" onclick="downloadDoc()">⬇ Download Word (.doc)</button>
-      <button class="btn btn-outline" onclick="copyReport()">📋 Copy formatted</button>
+      <button class="btn btn-outline" onclick="copyReport()">Copy formatted</button>
       <button class="btn btn-outline" onclick="downloadHTML()">⬇ Download HTML</button>
-      <button class="btn btn-outline" onclick="window.print()">🖨 Print / PDF</button>
+      <button class="btn btn-outline" onclick="window.print()">Print / PDF</button>
     </div>
     <div class="hint-box">Edit freely — the text is a starting point. Numbers are taken directly from your results; check that the interpretation fits your theory. Values in brackets <strong>[ ]</strong> need your input.</div>
     <div id="report-output"></div>
@@ -156,9 +156,36 @@ function loadProject(file){
   rd.readAsText(file);
 }
 
+// ───────────────────────── AUTOSAVE (v2.3) ─────────────────────────
+// The work is kept in this browser (localStorage) whenever the page is hidden or left, e.g. with the Home link.
+// Coming back in the same tab continues it at once; a later visit offers "Continue where you left off".
+const AUTOKEY='sanasoft:ann:autosave:v1', TABKEY='sanasoft:ann:open';
+function autosaveObj(withResults){return {app:'SaNaSoft-ANN',version:VERSION,saved:new Date().toISOString(),data:{rows:APP.data.rows,headers:APP.data.headers,fileName:APP.data.fileName},models:APP.models,settings:APP.settings,maxArrows:APP.maxArrows,
+  step:withResults?APP.step:Math.min(APP.step,7),active:APP.active,results:withResults?APP.results:null,resModel:APP.resModel,resNet:APP.resNet,resTab:APP.resTab};}
+function writeAutosave(){
+  if(!APP.data)return;
+  try{sessionStorage.setItem(TABKEY,'1');}catch(e){}
+  for(const withRes of APP.results?[true,false]:[false]){try{localStorage.setItem(AUTOKEY,JSON.stringify(autosaveObj(withRes)));return;}catch(e){/* too large: try without the trained networks */}}
+}
+function readAutosave(){try{const o=JSON.parse(localStorage.getItem(AUTOKEY)||'null');return o&&o.app==='SaNaSoft-ANN'&&o.data?o:null;}catch(e){return null;}}
+function restoreAutosave(o,quiet){
+  setData(o.data.rows,o.data.headers,o.data.fileName);APP.models=o.models;APP.active=o.active||0;APP.maxArrows=o.maxArrows||'';
+  const d=DEFAULT_SETTINGS();APP.settings=Object.assign(d,o.settings,{output:Object.assign(d.output,(o.settings||{}).output||{}),report:Object.assign(d.report,(o.settings||{}).report||{})});
+  APP.results=o.results||null;APP.resModel=o.resModel||0;APP.resNet=o.resNet||0;APP.resTab=o.resTab||'Summary';
+  goStep(Math.min(o.step||0,APP.results?9:7));toast(quiet?'Your work is back where you left it.':'Earlier work restored.');
+}
+function discardAutosave(){try{localStorage.removeItem(AUTOKEY);sessionStorage.removeItem(TABKEY);}catch(e){}goStep(0);}
+window.addEventListener('pagehide',writeAutosave);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')writeAutosave();});
+// Leaving while the networks train stops the training: ask first.
+window.addEventListener('beforeunload',e=>{if($('run-overlay')&&$('run-overlay').classList.contains('show')){e.preventDefault();e.returnValue='';}});
+
 // ───────────────────────── INIT ─────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
-  goStep(0);
+  const back=(()=>{try{return sessionStorage.getItem(TABKEY)==='1';}catch(e){return false;}})(), saved=readAutosave();
+  if(back&&saved){try{restoreAutosave(saved,true);}catch(e){goStep(0);}} else goStep(0);
+  // The logo and name lead to the Welcome step; the work stays as it is.
+  const hb=$('homebtn');if(hb)hb.onclick=e=>{e.preventDefault();goStep(0);};
   if(typeof Papa==='undefined'||typeof XLSX==='undefined'||typeof Chart==='undefined')
     setTimeout(()=>toast('Some libraries could not load (offline?). CSV/Excel import or charts may be unavailable.','err'),800);
 });

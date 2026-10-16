@@ -1,26 +1,38 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
+<nav class="suitebar" aria-label="SaNaSoft">
+  <a class="sb-home" href="https://sanapls.com/" title="Go to the SaNaSoft start page"><svg class="sb-icon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.8 7.6 8 2.2l6.2 5.4M3.4 6.4V14h3.6v-4h2v4h3.6V6.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /></svg><span>Home</span></a>
+  <ul class="sb-apps">
+    <li><a href="https://samssabraznawaz.github.io/fsqca/" title="Guided fuzzy-set QCA">fsQCA</a></li>
+    <li><a href="./" aria-current="page" title="Guided artificial neural network analysis">ANN</a></li>
+  </ul>
+</nav>
 <header>
-  <div>
-    <div class="logo">SaNa<span>Soft</span>-ANN</div>
-    <div class="tagline">Artificial Neural Network Analysis for PLS-SEM Researchers</div>
-  </div>
+  <a class="brandlink" href="./" id="homebtn" title="SaNaSoft-ANN: back to the Welcome step">
+    <span class="logo">SaNa<span>Soft</span>-ANN</span>
+    <span class="tagline">Artificial Neural Network Analysis for PLS-SEM Researchers</span>
+  </a>
   <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap">
-    <button class="hbtn" onclick="saveProject()">💾 Save project</button>
-    <button class="hbtn" onclick="document.getElementById('project-input').click()">📂 Open project</button>
+    <button class="hbtn" onclick="saveProject()">Save project</button>
+    <button class="hbtn" onclick="document.getElementById('project-input').click()">Open project</button>
     <input type="file" id="project-input" accept=".json,.sanaann" style="display:none" onchange="loadProject(this.files[0]);this.value=''">
-    <a class="hbtn" href="https://samssabraznawaz.github.io/fsqca/" title="SaNaSoft fsQCA — configurational analysis of the same PLS-SEM scores" style="text-decoration:none">🧩 SaNaSoft fsQCA</a>
-    <div class="badge">v2.1 · Prof. S. Sabraz Nawaz &amp; Prof. Ghazanfar Ali</div>
+    <div class="badge">v2.3 · Prof. S. Sabraz Nawaz &amp; Prof. Ghazanfar Ali</div>
   </div>
 </header>
 
 <div id="progress-bar"></div>
 
 <div id="main">
-  <div id="sidebar"></div>
-  <div id="content"></div>
+  <nav id="sidebar" aria-label="Analysis steps"></nav>
+  <main id="content" tabindex="-1"></main>
 </div>
+<footer class="suitefoot">
+  <a class="sb-home" href="https://sanapls.com/" title="Go to the SaNaSoft start page"><svg class="sb-icon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.8 7.6 8 2.2l6.2 5.4M3.4 6.4V14h3.6v-4h2v4h3.6V6.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" /></svg><span>Home</span></a>
+  <p class="sf-text">© 2026 Prof. S. Sabraz Nawaz and Prof. Ghazanfar Ali. Free and open source (MIT licence). Everything you do here stays on this computer.</p>
+  <p class="sf-links"><a href="https://github.com/samssabraznawaz/ann">Source code and validation</a></p>
+</footer>
 
 <!-- ══════════════════════ RUN OVERLAY ══════════════════════ -->
 <div id="run-overlay">

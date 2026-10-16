@@ -111,12 +111,12 @@ function resultTabs(rm){const O=APP.results.settings.output,t=['Summary'];
   if(O.weights)t.push('Parameter Estimates');if(O.curves)t.push('Training Curves');if(O.predObs)t.push('Predicted vs Observed');
   if(O.benchmark)t.push('Linear Benchmark');if(O.descriptives)t.push('Descriptives & Assumptions');if(rm.archSearch)t.push('Architecture Search');return t;}
 function renderStep8(c){
-  if(!APP.results){c.innerHTML=`<div class="card"><div class="card-title">📈 Results</div><div class="warn-box">No results yet — run the analysis in Step 7.</div><div class="btn-group"><button class="btn btn-primary" onclick="goStep(7)">Go to Step 7</button></div></div>`;return;}
+  if(!APP.results){c.innerHTML=`<div class="card"><div class="card-title">Results</div><div class="warn-box">No results yet — run the analysis in Step 7.</div><div class="btn-group"><button class="btn btn-primary" onclick="goStep(7)">Go to Step 7</button></div></div>`;return;}
   const R=APP.results,rm=RM(),tabs=resultTabs(rm);if(!tabs.includes(APP.resTab))APP.resTab='Summary';
   const perNet=PER_NET_TABS.includes(APP.resTab);
   c.innerHTML=`
   <div class="card">
-    <div class="card-title">📈 Step 8: Results</div>
+    <div class="card-title">Step 8: Results</div>
     <div class="card-subtitle">${esc(R.dataName)} · finished in ${(R.ms/1000).toFixed(1)} s · ${esc(R.engine)}</div>
     <div class="res-toolbar">
       ${R.models.length>1?`<label class="small"><strong>Model:</strong></label><select onchange="APP.resModel=+this.value;APP.resNet=0;renderStep(8)">${R.models.map((m,i)=>`<option value="${i}" ${i===APP.resModel?'selected':''}>${esc(m.name)} — ${esc(m.dep)}</option>`).join('')}</select>`:''}
@@ -274,17 +274,17 @@ function diagramSVG(rm,net){
   let maxW=0;for(let i=0;i<th.length;i++)maxW=Math.max(maxW,Math.abs(th[i]));maxW=maxW||1;
   let lines='',nodes='';
   for(let l=0;l<L;l++){const nIn=sz[l];for(let j=0;j<sz[l+1];j++){for(let i=0;i<=nIn;i++){const w=th[off[l]+j*(nIn+1)+i];const xa=i===nIn?X(l)+34:X(l),ya=i===nIn?BY:Y(l,i);
-    lines+=`<line x1="${xa.toFixed(1)}" y1="${ya.toFixed(1)}" x2="${X(l+1).toFixed(1)}" y2="${Y(l+1,j).toFixed(1)}" stroke="${w>=0?'#1e5bb8':'#9e9e9e'}" stroke-width="${(0.4+4*Math.abs(w)/maxW).toFixed(2)}" stroke-opacity="0.85"><title>${w.toFixed(4)}</title></line>`;}}}
+    lines+=`<line x1="${xa.toFixed(1)}" y1="${ya.toFixed(1)}" x2="${X(l+1).toFixed(1)}" y2="${Y(l+1,j).toFixed(1)}" stroke="${w>=0?'#0072b2':'#9e9e9e'}" stroke-width="${(0.4+4*Math.abs(w)/maxW).toFixed(2)}" stroke-opacity="0.85"><title>${w.toFixed(4)}</title></line>`;}}}
   for(let l=0;l<L;l++)nodes+=`<circle cx="${X(l)+34}" cy="${BY}" r="13" fill="#fff" stroke="#555" stroke-width="1.2"/><text x="${X(l)+34}" y="${BY+4}" font-size="9" text-anchor="middle" fill="#333">Bias</text>`;
-  for(let l=0;l<=L;l++)for(let j=0;j<sz[l];j++){const cx=X(l),cy=Y(l,j);const fill=l===0?'#ff8f00':l===L?'#2e7d32':'#3949ab';
+  for(let l=0;l<=L;l++)for(let j=0;j<sz[l];j++){const cx=X(l),cy=Y(l,j);const fill=l===0?'#d55e00':l===L?'#2e6b3f':'#4a6f94';
     nodes+=`<circle cx="${cx}" cy="${cy}" r="16" fill="${fill}" stroke="#fff" stroke-width="2"/>`;
     if(l===0)nodes+=`<text x="${cx-24}" y="${cy+4}" font-size="12" text-anchor="end" fill="#222" font-weight="600">${esc(rm.featureNames[j])}</text>`;
     else if(l===L)nodes+=`<text x="${cx+24}" y="${cy+4}" font-size="12" fill="#222" font-weight="600">${esc(rm.dep)}</text>`;
     else nodes+=`<text x="${cx}" y="${cy+3.5}" font-size="8.5" text-anchor="middle" fill="#fff">H(${l}:${j+1})</text>`;}
-  let labels='';for(let l=0;l<=L;l++)labels+=`<text x="${X(l)}" y="${H-22}" font-size="11" text-anchor="middle" fill="#1a237e" font-weight="700">${l===0?'Input layer':l===L?'Output layer':'Hidden layer '+l}</text>`;
+  let labels='';for(let l=0;l<=L;l++)labels+=`<text x="${X(l)}" y="${H-22}" font-size="11" text-anchor="middle" fill="#1f4e79" font-weight="700">${l===0?'Input layer':l===L?'Output layer':'Hidden layer '+l}</text>`;
   const act={sigmoid:'Sigmoid',tanh:'Hyperbolic tangent',relu:'ReLU',identity:'Identity'};
   return `<svg xmlns="http://www.w3.org/2000/svg" id="net-svg" width="${W}" height="${H+16}" viewBox="0 0 ${W} ${H+16}" font-family="Arial, Helvetica, sans-serif"><rect width="100%" height="100%" fill="#fff"/>${lines}${nodes}${labels}
-    <g transform="translate(${W-230},14)"><line x1="0" y1="6" x2="26" y2="6" stroke="#1e5bb8" stroke-width="3"/><text x="32" y="10" font-size="10.5" fill="#333">Synaptic weight &gt; 0</text><line x1="0" y1="22" x2="26" y2="22" stroke="#9e9e9e" stroke-width="3"/><text x="32" y="26" font-size="10.5" fill="#333">Synaptic weight &lt; 0</text></g>
+    <g transform="translate(${W-230},14)"><line x1="0" y1="6" x2="26" y2="6" stroke="#0072b2" stroke-width="3"/><text x="32" y="10" font-size="10.5" fill="#333">Synaptic weight &gt; 0</text><line x1="0" y1="22" x2="26" y2="22" stroke="#9e9e9e" stroke-width="3"/><text x="32" y="26" font-size="10.5" fill="#333">Synaptic weight &lt; 0</text></g>
     <text x="10" y="${H+8}" font-size="10.5" fill="#555">Hidden layer activation: ${act[S.hAct]} · Output layer activation: ${act[S.oAct]} · Network ${net.k}</text></svg>`;
 }
 function downloadDiagram(kind){
@@ -298,18 +298,18 @@ function drawTabCharts(tab,rm){
   const s=rm.summary,g=rm.groups,net=rm.nets[APP.resNet]||rm.nets[0];
   const mk=(id,cfg)=>{const el=$(id);if(!el)return;const ex=Chart.getChart(el);if(ex)ex.destroy();APP.charts[id]=new Chart(el,cfg);};
   if(tab==='Summary'||tab==='Sensitivity Analysis'){const ord=rankOrder(s.normImportance);
-    mk('ch-imp',{type:'bar',data:{labels:ord.map(i=>g[i]),datasets:[{label:'Normalized importance (%)',data:ord.map(i=>+s.normImportance[i].toFixed(1)),backgroundColor:ord.map((_,k)=>k===0?'#1a237e':'#7986cb'),borderRadius:4}]},
+    mk('ch-imp',{type:'bar',data:{labels:ord.map(i=>g[i]),datasets:[{label:'Normalized importance (%)',data:ord.map(i=>+s.normImportance[i].toFixed(1)),backgroundColor:ord.map((_,k)=>k===0?'#1f4e79':'#9db3c9'),borderRadius:4}]},
       options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'%'}}},scales:{x:{min:0,max:100,title:{display:true,text:'Normalized importance (%)'}}}}});}
   if(tab==='Training Curves'){const n=net.histTr.length,ep=net.epochs;const lab=net.histTr.map((_,i)=>Math.round(1+i*(ep-1)/Math.max(1,n-1)));
-    mk('ch-curve',{type:'line',data:{labels:lab,datasets:[{label:'Training MSE',data:net.histTr,borderColor:'#1a237e',pointRadius:0,borderWidth:2},{label:'Testing MSE',data:net.histTe,borderColor:'#ff8f00',pointRadius:0,borderWidth:2}]},
+    mk('ch-curve',{type:'line',data:{labels:lab,datasets:[{label:'Training MSE',data:net.histTr,borderColor:'#1f4e79',pointRadius:0,borderWidth:2},{label:'Testing MSE',data:net.histTe,borderColor:'#d55e00',pointRadius:0,borderWidth:2}]},
       options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{title:{display:true,text:`Network ${net.k} — best epoch ${net.bestEpoch}`}},scales:{x:{title:{display:true,text:'Epoch'},ticks:{maxTicksLimit:12}},y:{type:'logarithmic',title:{display:true,text:'MSE (log scale)'}}}},
-      plugins:[{id:'best',afterDraw(ch){const xs=ch.scales.x;const idx=lab.findIndex(v=>v>=net.bestEpoch);if(idx<0)return;const x=xs.getPixelForValue(idx);const c=ch.ctx;c.save();c.setLineDash([5,4]);c.strokeStyle='#2e7d32';c.beginPath();c.moveTo(x,ch.chartArea.top);c.lineTo(x,ch.chartArea.bottom);c.stroke();c.restore();}}]});}
+      plugins:[{id:'best',afterDraw(ch){const xs=ch.scales.x;const idx=lab.findIndex(v=>v>=net.bestEpoch);if(idx<0)return;const x=xs.getPixelForValue(idx);const c=ch.ctx;c.save();c.setLineDash([5,4]);c.strokeStyle='#2e6b3f';c.beginPath();c.moveTo(x,ch.chartArea.top);c.lineTo(x,ch.chartArea.bottom);c.stroke();c.restore();}}]});}
   if(tab==='Predicted vs Observed'){const a=rm.dv.a,b=rm.dv.b;let obs,pred;
     if(s.oofPred){obs=s.oofObs;pred=s.oofPred;}else{obs=rm.nets.flatMap(n=>n.obsTest);pred=rm.nets.flatMap(n=>n.predTest);}
     const O=obs.map(v=>v*b+a),P=pred.map(v=>v*b+a);const lo=Math.min(...O,...P),hi=Math.max(...O,...P);
-    mk('ch-po',{type:'scatter',data:{datasets:[{label:'Cases',data:O.map((v,i)=>({x:v,y:P[i]})),backgroundColor:'rgba(26,35,126,.45)',pointRadius:3},{label:'Perfect prediction',type:'line',data:[{x:lo,y:lo},{x:hi,y:hi}],borderColor:'#c62828',borderDash:[6,4],pointRadius:0}]},
+    mk('ch-po',{type:'scatter',data:{datasets:[{label:'Cases',data:O.map((v,i)=>({x:v,y:P[i]})),backgroundColor:'rgba(31,78,121,.45)',pointRadius:3},{label:'Perfect prediction',type:'line',data:[{x:lo,y:lo},{x:hi,y:hi}],borderColor:'#a23b2a',borderDash:[6,4],pointRadius:0}]},
       options:{maintainAspectRatio:false,plugins:{title:{display:true,text:'Predicted vs observed'}},scales:{x:{title:{display:true,text:'Observed '+rm.dep}},y:{title:{display:true,text:'Predicted '+rm.dep}}}}});
-    mk('ch-res',{type:'scatter',data:{datasets:[{label:'Residual',data:P.map((v,i)=>({x:v,y:O[i]-v})),backgroundColor:'rgba(255,143,0,.55)',pointRadius:3}]},
+    mk('ch-res',{type:'scatter',data:{datasets:[{label:'Residual',data:P.map((v,i)=>({x:v,y:O[i]-v})),backgroundColor:'rgba(213,94,0,.55)',pointRadius:3}]},
       options:{maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:'Residuals vs predicted'}},scales:{x:{title:{display:true,text:'Predicted'}},y:{title:{display:true,text:'Residual (observed − predicted)'}}}}});}
 }
 function exportCSV(){

@@ -13,7 +13,7 @@ const head = `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="SaNaSoft-ANN: guided artificial neural network analysis for PLS-SEM + ANN research, implementing Leong et al. (2025). Developed by Prof. S. Sabraz Nawaz and Prof. Ghazanfar Ali.">
 <title>SaNaSoft-ANN: guided neural network analysis for PLS-SEM latent variable scores (developed by Prof. S. Sabraz Nawaz and Prof. Ghazanfar Ali)</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -27,7 +27,7 @@ if (engine.includes('</script>')) throw new Error('engine.js must not contain </
 const appFiles = ['app-core.js', 'app-steps.js', 'app-results.js', 'app-report.js'];
 const out =
   head +
-  src('styles/base.css') + src('styles/v2.css') +
+  src('styles/base.css') + src('styles/v2.css') + src('styles/ink.css') +
   src('shell.html') +
   engine + '\n</script>\n<script>\n' +
   appFiles.map(src).join('\n') +
